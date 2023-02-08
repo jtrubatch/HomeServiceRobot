@@ -1,0 +1,48 @@
+<launch>
+	<!-- map server -->
+	<arg name="map_file" default="$(find my_robot)/maps/map.yaml"/>
+	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+	<!-- amcl -->
+	<node name="amcl" pkg="amcl" type="amcl" output="screen">
+		<param name="odom_frame_id" value="odom"/>
+  	<param name="odom_model_type" value="diff-corrected"/>
+  	<param name="base_frame_id" value="robot_footprint"/>
+  	<param name="global_frame_id" value="map"/>
+		
+		<param name="initial_pose_x" value="-4.5"/>
+		<param name="initial_pose_y" value="-4.5"/>
+		<param name="initial_pose_a" value="0"/>
+		
+		<param name="max_particles" value="1250" />
+		<param name="update_min_d" value="0.1" />
+		<param name="update_min_a" value="0.35" />
+		<param name="laser_max_beams" value="75" />
+		<param name="laser_z_max" value="0.65" />
+		<param name="laser_z_rand" value="0.35" />
+		<param name="laser_max_range" value="20" />
+	</node>
+	
+	<!-- move base -->
+	<node name="move_base" pkg="move_base" type="move_base" respawn="false" output="screen">
+		<rosparam file="$(find my_robot)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+  	<rosparam file="$(find my_robot)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+  	<rosparam file="$(find my_robot)/config/local_costmap_params.yaml" command="load" />
+  	<rosparam file="$(find my_robot)/config/global_costmap_params.yaml" command="load" />
+  	
+  	<rosparam file="$(find my_robot)/config/dwa_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find my_robot)/config/move_base_params.yaml" command="load" />
+    <rosparam file="$(find my_robot)/config/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find my_robot)/config/navfn_global_planner_params.yaml" command="load" />
+  	
+  	<param name="global_costmap/global_frame" value="map"/>
+    <param name="global_costmap/robot_base_frame" value="robot_footprint"/>
+    <param name="local_costmap/global_frame" value="odom"/>
+    <param name="local_costmap/robot_base_frame" value="robot_footprint"/>
+    <param name="DWAPlannerROS/global_frame_id" value="odom"/>
+
+  
+  </node>
+
+</launch>
+
